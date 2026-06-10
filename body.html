@@ -1,0 +1,408 @@
+<body>
+<div class="aura-stage"><div class="aura-grid"></div><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+<div class="noise"></div>
+
+<nav class="nav">
+  <div class="brand"><span class="logo"><span>✨</span></span> AuraGrade<span style="color:var(--c2)">4K</span></div>
+  <div class="nav-links">
+    <a href="#studio">Studio</a>
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <button class="cta" onclick="document.getElementById('studio').scrollIntoView({behavior:'smooth'})">Launch Studio</button>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <span class="tag"><span class="dot"></span> AI Color Science · Aura Grade Engine · 4K Upscale</span>
+  <h1>Turn any video into a<br><span class="grad">cinematic 4K masterpiece</span></h1>
+  <p class="sub">Upload a clip and AuraGrade analyzes it frame-by-frame, then applies pro <b>Aura</b> color grading, sharpening, denoise and upscaling — the look of an After‑Effects colorist, right in your browser.</p>
+  <div class="hero-cta">
+    <button class="btn btn-primary" onclick="document.getElementById('file').click()">↑ Upload your video</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+  </div>
+  <div class="hero-orbit wrap">
+    <div class="chip c1">🎬 Teal &amp; Orange grade</div>
+    <div class="chip c2">⚡ Real‑time preview</div>
+    <div class="chip c3">🔍 Auto scene analysis</div>
+    <div class="chip c4">🖥️ Export up to 4K</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="studio" class="sec reveal">
+    <div class="sec-head">
+      <span class="ey">The Studio</span>
+      <h2>Your video enhancement workspace</h2>
+      <p>Drop a file to begin. Everything runs locally — your video never leaves your device.</p>
+    </div>
+
+    <div class="studio">
+      <input type="file" id="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/*,.mp4,.m4v,.mov,.webm,.mkv,.avi" hidden>
+      <div class="drop" id="drop">
+        <div class="ic">🎞️</div>
+        <h3>Drag &amp; drop your video</h3>
+        <p>or click to browse — <b style="color:var(--ink)">MP4</b>, MOV, WebM, MKV</p>
+        <div class="hint">Processed privately in your browser · no upload to any server</div>
+      </div>
+
+      <div class="workspace" id="workspace">
+        <div>
+          <div class="viewer">
+            <div class="canvas-wrap">
+              <canvas id="procCanvas"></canvas>
+              <div class="compare"><canvas id="origCanvas"></canvas></div>
+              <span class="tagba">BEFORE</span>
+              <span class="tagaf">AFTER · AURA</span>
+              <div class="handle" id="handle"></div>
+            </div>
+            <div class="viewer-foot">
+              <span class="pill">🎮 <button id="playBtn" style="padding:5px 12px;font-size:12px;">Play</button></span>
+              <span class="pill" id="timecode">00:00 / 00:00</span>
+              <span class="pill">↔️ Drag the divider to compare</span>
+            </div>
+          </div>
+          <div class="analysis" id="analysis">
+            <div class="acard"><div class="k">Source resolution</div><div class="v" id="aRes">—</div></div>
+            <div class="acard"><div class="k">Duration</div><div class="v" id="aDur">—</div></div>
+            <div class="acard"><div class="k">Detected scene</div><div class="v" id="aScene">—</div></div>
+            <div class="acard"><div class="k">Aura target</div><div class="v" id="aTarget">— <small id="aUp"></small></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div>
+            <h4>Aura presets</h4>
+            <div class="presets" id="presets">
+              <button class="preset active" data-p="cinematic"><b>Cinematic</b><span>Teal &amp; orange film look</span></button>
+              <button class="preset" data-p="vivid"><b>Vivid HDR</b><span>Punchy, vibrant pop</span></button>
+              <button class="preset" data-p="filmic"><b>Filmic</b><span>Soft, warm cinema</span></button>
+              <button class="preset" data-p="crisp"><b>Crisp 4K</b><span>Clean, sharp, neutral</span></button>
+              <button class="preset" data-p="noir"><b>Noir</b><span>High‑contrast mono</span></button>
+              <button class="preset" data-p="custom"><b>Custom</b><span>Your manual grade</span></button>
+            </div>
+          </div>
+
+          <div class="sliders" id="sliders">
+            <div class="slider"><label>Exposure <span class="val" id="vExp">+0.04</span></label><input type="range" id="sExp" min="-0.5" max="0.5" step="0.01" value="0.04"></div>
+            <div class="slider"><label>Contrast <span class="val" id="vCon">1.14</span></label><input type="range" id="sCon" min="0.5" max="2" step="0.01" value="1.14"></div>
+            <div class="slider"><label>Saturation <span class="val" id="vSat">1.22</span></label><input type="range" id="sSat" min="0" max="2" step="0.01" value="1.22"></div>
+            <div class="slider"><label>Vibrance <span class="val" id="vVib">0.30</span></label><input type="range" id="sVib" min="0" max="1" step="0.01" value="0.30"></div>
+            <div class="slider"><label>Temperature <span class="val" id="vTmp">+0.08</span></label><input type="range" id="sTmp" min="-0.5" max="0.5" step="0.01" value="0.08"></div>
+            <div class="slider"><label>Sharpness <span class="val" id="vShp">0.55</span></label><input type="range" id="sShp" min="0" max="1.5" step="0.01" value="0.55"></div>
+            <div class="slider"><label>Denoise <span class="val" id="vNoi">0.20</span></label><input type="range" id="sNoi" min="0" max="1" step="0.01" value="0.20"></div>
+            <div class="slider"><label>Teal–Orange grade <span class="val" id="vGr">0.45</span></label><input type="range" id="sGr" min="0" max="1" step="0.01" value="0.45"></div>
+          </div>
+
+          <div>
+            <h4>Output resolution</h4>
+            <div class="reslist" id="reslist">
+              <div class="res" data-h="720">720p<small>HD</small></div>
+              <div class="res" data-h="1080">1080p<small>Full HD</small></div>
+              <div class="res" data-h="1440">1440p<small>2K</small></div>
+              <div class="res active" data-h="2160">2160p<small>4K UHD</small></div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" id="exportBtn" style="width:100%;justify-content:center;">✨ Enhance &amp; Export 4K</button>
+          <div class="progress" id="progress">
+            <div class="bar"><i id="barfill"></i></div>
+            <div class="lab"><span id="progLab">Rendering…</span><span id="progPct">0%</span></div>
+          </div>
+          <button class="btn btn-ghost" id="resetBtn" style="width:100%;justify-content:center;">↺ Load a different video</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="sec reveal">
+    <div class="sec-head"><span class="ey">Capabilities</span><h2>Studio‑grade tools, zero learning curve</h2></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="fic">🔍</div><h3>Intelligent analysis</h3><p>Reads resolution, duration, motion and average tone of your clip, then auto‑suggests the ideal Aura grade and upscale target.</p></div>
+      <div class="feat"><div class="fic">🎨</div><h3>Aura color grading</h3><p>A GPU color pipeline emulating an After‑Effects colorist — lift/gamma/gain, teal‑orange split toning, vibrance and white balance.</p></div>
+      <div class="feat"><div class="fic">🔬</div><h3>Detail &amp; denoise</h3><p>Unsharp‑mask sharpening recovers crisp edges while adaptive denoise smooths grain — cleaner footage at higher resolution.</p></div>
+      <div class="feat"><div class="fic">⬆️</div><h3>Up to 4K upscale</h3><p>Re‑renders every frame to your chosen resolution, all the way to 2160p UHD, with high‑quality resampling.</p></div>
+      <div class="feat"><div class="fic">⚡</div><h3>Live before / after</h3><p>A real‑time WebGL preview with a draggable split so you can judge the grade frame‑accurately before exporting.</p></div>
+      <div class="feat"><div class="fic">🔒</div><h3>Private by design</h3><p>100% client‑side. Your footage is processed on your own device and never uploaded to any server.</p></div>
+    </div>
+  </section>
+
+  <section id="how" class="sec reveal">
+    <div class="sec-head"><span class="ey">Workflow</span><h2>Four steps to a cinematic export</h2></div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Upload</h3><p>Drop any video into the Studio.</p></div>
+      <div class="step"><div class="n">2</div><h3>Analyze</h3><p>AuraGrade inspects the footage and recommends a grade.</p></div>
+      <div class="step"><div class="n">3</div><h3>Grade</h3><p>Pick a preset or fine‑tune the live color controls.</p></div>
+      <div class="step"><div class="n">4</div><h3>Export</h3><p>Render and download your enhanced 4K clip.</p></div>
+    </div>
+  </section>
+
+  <footer class="foot reveal">
+    <div class="made">Crafted with 🖤 by <b>Priyanshu Kumar Rai</b></div>
+    <div class="small">AuraGrade 4K · In‑browser cinematic video enhancement · © 2026</div>
+  </footer>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ AuraGrade engine ============ */
+const $=id=>document.getElementById(id);
+const toast=(m)=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2600);};
+
+const video=document.createElement('video');
+video.playsInline=true;video.muted=true;video.loop=false;video.preload='auto';
+video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
+video.style.cssText='position:fixed;left:-20px;bottom:-20px;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-5;';
+document.body.appendChild(video);
+let gl,prog,tex,locs,rafId,ready=false;
+let srcW=0,srcH=0,outH=2160;
+const proc=$('procCanvas'),orig=$('origCanvas');
+const octx=orig.getContext('2d');
+
+/* grade params */
+const P={exp:0.04,con:1.14,sat:1.22,vib:0.30,tmp:0.08,shp:0.55,noi:0.20,grade:0.45};
+const presets={
+  cinematic:{exp:0.04,con:1.14,sat:1.22,vib:0.30,tmp:0.08,shp:0.55,noi:0.20,grade:0.45},
+  vivid:{exp:0.08,con:1.22,sat:1.5,vib:0.55,tmp:0.02,shp:0.7,noi:0.15,grade:0.2},
+  filmic:{exp:0.06,con:1.08,sat:1.05,vib:0.25,tmp:0.18,shp:0.35,noi:0.3,grade:0.3},
+  crisp:{exp:0.02,con:1.1,sat:1.1,vib:0.2,tmp:0.0,shp:1.0,noi:0.1,grade:0.0},
+  noir:{exp:0.05,con:1.45,sat:0.0,vib:0.0,tmp:0.0,shp:0.8,noi:0.2,grade:0.0},
+  custom:null
+};
+
+/* ---------- WebGL setup ---------- */
+const VERT=`attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*0.5+0.5,0.5-p.y*0.5);gl_Position=vec4(p,0.0,1.0);}`;
+const FRAG=`
+precision highp float;
+varying vec2 uv;
+uniform sampler2D tex;
+uniform vec2 px;
+uniform float exp,con,sat,vib,tmp,shp,noi,grade;
+vec3 sample(vec2 c){return texture2D(tex,c).rgb;}
+void main(){
+  vec3 c=sample(uv);
+  /* denoise: blend with 3x3 average */
+  if(noi>0.001){
+    vec3 a=vec3(0.0);
+    a+=sample(uv+vec2(-px.x,-px.y));a+=sample(uv+vec2(0.0,-px.y));a+=sample(uv+vec2(px.x,-px.y));
+    a+=sample(uv+vec2(-px.x,0.0));a+=c;a+=sample(uv+vec2(px.x,0.0));
+    a+=sample(uv+vec2(-px.x,px.y));a+=sample(uv+vec2(0.0,px.y));a+=sample(uv+vec2(px.x,px.y));
+    a/=9.0;
+    c=mix(c,a,clamp(noi,0.0,1.0)*0.6);
+  }
+  /* sharpen: unsharp mask */
+  if(shp>0.001){
+    vec3 b=sample(uv+vec2(px.x,0.0))+sample(uv-vec2(px.x,0.0))+sample(uv+vec2(0.0,px.y))+sample(uv-vec2(0.0,px.y));
+    vec3 hi=c*4.0-b;
+    c=c+hi*shp*0.18;
+  }
+  /* exposure */
+  c*= pow(2.0,exp);
+  /* white balance / temperature */
+  c.r+=tmp*0.12; c.b-=tmp*0.12;
+  /* contrast around 0.5 */
+  c=(c-0.5)*con+0.5;
+  /* luma */
+  float l=dot(c,vec3(0.299,0.587,0.114));
+  /* saturation */
+  c=mix(vec3(l),c,sat);
+  /* vibrance: boost low-sat pixels more */
+  float mx=max(c.r,max(c.g,c.b));float mn=min(c.r,min(c.g,c.b));
+  float satv=mx-mn;
+  c=mix(vec3(l),c,1.0+vib*(1.0-satv));
+  /* teal-orange split toning */
+  vec3 shadowT=vec3(0.0,0.42,0.55); /* teal */
+  vec3 highT=vec3(1.0,0.62,0.18);   /* orange */
+  float t=smoothstep(0.15,0.85,l);
+  vec3 toned=mix(c*mix(vec3(1.0),shadowT*1.6,0.5),c*mix(vec3(1.0),highT*1.4,0.5),t);
+  c=mix(c,toned,grade*0.5);
+  gl_FragColor=vec4(clamp(c,0.0,1.0),1.0);
+}`;
+function sh(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(x));return x;}
+function initGL(){
+  gl=proc.getContext('webgl',{preserveDrawingBuffer:true,premultipliedAlpha:false});
+  if(!gl){toast('WebGL not supported in this browser');return false;}
+  prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,VERT));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FRAG));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const pl=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(pl);gl.vertexAttribPointer(pl,2,gl.FLOAT,false,0,0);
+  tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  locs={};['px','exp','con','sat','vib','tmp','shp','noi','grade'].forEach(n=>locs[n]=gl.getUniformLocation(prog,n));
+  return true;
+}
+function setSize(){
+  const ar=srcW/srcH||16/9;
+  proc.height=outH;proc.width=Math.round(outH*ar);
+  orig.width=proc.width;orig.height=proc.height;
+  gl.viewport(0,0,proc.width,proc.height);
+}
+function drawFrame(){
+  if(!ready)return;
+  gl.bindTexture(gl.TEXTURE_2D,tex);
+  try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,video);}catch(e){return;}
+  gl.uniform2f(locs.px,1/proc.width,1/proc.height);
+  gl.uniform1f(locs.exp,P.exp);gl.uniform1f(locs.con,P.con);gl.uniform1f(locs.sat,P.sat);
+  gl.uniform1f(locs.vib,P.vib);gl.uniform1f(locs.tmp,P.tmp);gl.uniform1f(locs.shp,P.shp);
+  gl.uniform1f(locs.noi,P.noi);gl.uniform1f(locs.grade,P.grade);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  /* original (before) frame */
+  octx.drawImage(video,0,0,orig.width,orig.height);
+}
+function loop(){drawFrame();updateTC();rafId=requestAnimationFrame(loop);}
+
+/* ---------- file handling ---------- */
+function fmt(t){t=Math.max(0,t|0);const m=(t/60)|0,s=t%60;return (m<10?'0':'')+m+':'+(s<10?'0':'')+s;}
+function updateTC(){$('timecode').textContent=fmt(video.currentTime)+' / '+fmt(video.duration||0);}
+function sceneGuess(){
+  /* sample a frame's average luma/color for a friendly label */
+  const tc=document.createElement('canvas');tc.width=64;tc.height=36;
+  const x=tc.getContext('2d');try{x.drawImage(video,0,0,64,36);}catch(e){return 'General';}
+  const d=x.getImageData(0,0,64,36).data;let r=0,g=0,b=0;
+  for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}
+  const n=d.length/4;r/=n;g/=n;b/=n;const lum=(r*.299+g*.587+b*.114)/255;
+  if(lum<0.28)return 'Low\u2011light / Night';
+  if(b>r+12)return 'Cool / Daylight';
+  if(r>b+18)return 'Warm / Golden hour';
+  if(lum>0.7)return 'Bright / High\u2011key';
+  return 'Balanced';
+}
+function loadFile(f){
+  if(!f){return;}
+  const okType=(f.type||'').startsWith('video');
+  const okExt=/\.(mp4|m4v|mov|webm|mkv|avi|ogv|3gp)$/i.test(f.name||'');
+  if(!okType&&!okExt){toast('Please choose a video file (MP4, MOV, WebM\u2026)');return;}
+  if(video._url)try{URL.revokeObjectURL(video._url);}catch(e){}
+  const url=URL.createObjectURL(f);video._url=url;
+  video.onseeked=null;video.onended=null;
+  const onMeta=()=>{
+    if(!video.videoWidth||ready&&video.src!==url)return;
+    video.onloadedmetadata=null;video.onloadeddata=null;
+    srcW=video.videoWidth;srcH=video.videoHeight;
+    if(!gl){if(!initGL())return;}
+    setSize();ready=true;
+    $('drop').style.display='none';$('workspace').classList.add('on');
+    $('aRes').innerHTML=srcW+' \u00d7 '+srcH;
+    $('aDur').textContent=fmt(video.duration);
+    updateTarget();
+    try{video.currentTime=Math.min(0.1,(video.duration||1)*0.1);}catch(e){}
+    video.onseeked=()=>{$('aScene').textContent=sceneGuess();drawFrame();video.onseeked=null;};
+    cancelAnimationFrame(rafId);loop();drawFrame();
+    toast('Video analyzed \u2014 ready to grade ✨');
+    document.getElementById('studio').scrollIntoView({behavior:'smooth'});
+  };
+  video.onloadedmetadata=onMeta;
+  video.onloadeddata=onMeta;
+  video.onerror=()=>{
+    const c=video.error?video.error.code:0;
+    if(c===4)toast('Browser can’t decode this codec (often HEVC/H.265). Re\u2011save as H.264 MP4 and retry.');
+    else if(c===3)toast('This file looks corrupted or uses an unsupported codec. Try an H.264 MP4.');
+    else if(c===2)toast('Could not read the file. Please try again.');
+    else toast('Could not read this video. An H.264 MP4 or WebM works best.');
+  };
+  video.src=url;
+  try{video.load();}catch(e){}
+}
+function updateTarget(){
+  $('aTarget').childNodes[0].nodeValue=outH+'p ';
+  const up=(outH/srcH);
+  $('aUp').textContent=up>1.02?('\u00d7'+up.toFixed(1)+' upscale'):'native';
+}
+
+/* ---------- UI bindings ---------- */
+$('file').addEventListener('change',e=>loadFile(e.target.files[0]));
+const drop=$('drop');
+drop.addEventListener('click',()=>$('file').click());
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+
+const sl={sExp:'exp',sCon:'con',sSat:'sat',sVib:'vib',sTmp:'tmp',sShp:'shp',sNoi:'noi',sGr:'grade'};
+const lbl={exp:'vExp',con:'vCon',sat:'vSat',vib:'vVib',tmp:'vTmp',shp:'vShp',noi:'vNoi',grade:'vGr'};
+function syncLabels(){for(const k in lbl){const v=P[k];const s=(k==='exp'||k==='tmp')?(v>=0?'+':''):'';$(lbl[k]).textContent=s+v.toFixed(2);}}
+function syncSliders(){for(const id in sl)$(id).value=P[sl[id]];syncLabels();}
+Object.keys(sl).forEach(id=>{$(id).addEventListener('input',e=>{P[sl[id]]=parseFloat(e.target.value);syncLabels();setPreset('custom',false);if(!video.paused){}else drawFrame();});});
+
+function setPreset(name,apply=true){
+  document.querySelectorAll('.preset').forEach(b=>b.classList.toggle('active',b.dataset.p===name));
+  if(apply&&presets[name]){Object.assign(P,presets[name]);syncSliders();drawFrame();}
+}
+document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>setPreset(b.dataset.p)));
+
+document.querySelectorAll('.res').forEach(r=>r.addEventListener('click',()=>{
+  document.querySelectorAll('.res').forEach(x=>x.classList.remove('active'));r.classList.add('active');
+  outH=parseInt(r.dataset.h);if(ready){setSize();updateTarget();drawFrame();}
+}));
+
+$('playBtn').addEventListener('click',()=>{if(video.paused){video.play();$('playBtn').textContent='Pause';}else{video.pause();$('playBtn').textContent='Play';}});
+video.addEventListener('ended',()=>$('playBtn').textContent='Play');
+
+$('resetBtn').addEventListener('click',()=>{video.pause();ready=false;cancelAnimationFrame(rafId);$('workspace').classList.remove('on');$('drop').style.display='block';$('file').value='';$('playBtn').textContent='Play';});
+
+/* compare handle */
+const handle=$('handle');let dragging=false;
+const wrap=document.querySelector('.canvas-wrap');
+function setSplit(clientX){const r=wrap.getBoundingClientRect();let p=(clientX-r.left)/r.width*100;p=Math.max(0,Math.min(100,p));wrap.style.setProperty('--split',p+'%');}
+handle.addEventListener('pointerdown',e=>{dragging=true;handle.setPointerCapture(e.pointerId);});
+handle.addEventListener('pointermove',e=>{if(dragging)setSplit(e.clientX);});
+handle.addEventListener('pointerup',()=>dragging=false);
+wrap.style.setProperty('--split','50%');
+
+/* ---------- export with MediaRecorder ---------- */
+let audioCtx;
+$('exportBtn').addEventListener('click',async()=>{
+  if(!ready){toast('Load a video first');return;}
+  const btn=$('exportBtn');btn.disabled=true;
+  $('progress').classList.add('on');
+  const fps=30;
+  const vstream=proc.captureStream(fps);
+  /* attach audio */
+  try{
+    if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=audioCtx.createMediaElementSource(video);
+      const dest=audioCtx.createMediaStreamDestination();
+      src.connect(dest);src.connect(audioCtx.destination);video._dest=dest;}
+    if(video._dest)video._dest.stream.getAudioTracks().forEach(t=>vstream.addTrack(t));
+  }catch(e){/* audio optional */}
+  const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'video/webm';
+  const rec=new MediaRecorder(vstream,{mimeType:mime,videoBitsPerSecond:outH>=2160?32000000:outH>=1440?18000000:10000000});
+  const chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  rec.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='auragrade-'+outH+'p.webm';a.click();
+    btn.disabled=false;$('progLab').textContent='Done \u2014 downloaded';$('progPct').textContent='100%';$('barfill').style.width='100%';
+    toast('Enhanced video exported 🎉');
+    setTimeout(()=>{$('progress').classList.remove('on');$('barfill').style.width='0%';},2500);
+  };
+  video.pause();video.currentTime=0;video.muted=false;
+  await new Promise(r=>{video.onseeked=()=>{video.onseeked=null;r();};});
+  if(audioCtx&&audioCtx.state==='suspended')await audioCtx.resume();
+  rec.start(100);
+  $('progLab').textContent='Rendering enhanced frames\u2026';
+  const dur=video.duration||1;
+  const tick=()=>{const p=Math.min(100,Math.round(video.currentTime/dur*100));$('barfill').style.width=p+'%';$('progPct').textContent=p+'%';};
+  const iv=setInterval(tick,150);
+  video.play();$('playBtn').textContent='Pause';
+  video.onended=()=>{clearInterval(iv);setTimeout(()=>rec.stop(),300);video.muted=true;$('playBtn').textContent='Play';};
+});
+
+/* reveal on scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* parallax tilt on feature cards + orbs follow mouse */
+document.addEventListener('pointermove',e=>{
+  const x=(e.clientX/innerWidth-0.5),y=(e.clientY/innerHeight-0.5);
+  document.querySelector('.orb.a').style.transform=`translate(${x*-40}px,${y*-30}px)`;
+  document.querySelector('.orb.c').style.transform=`translate(${x*30}px,${y*20}px)`;
+});
+syncSliders();
+</script>
+</body>
